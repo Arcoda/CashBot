@@ -1,0 +1,29 @@
+plugins {
+    id'application'
+    id'com.github.johnrengelman.shadow' version '7.1.2'
+}
+
+mainClassName = 'com.github.arcoda.CashBot.CashBot' //
+
+version '1.0'
+def jdaVersion = '4.4.0_352' //
+
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+
+repositories {
+    mavenCentral()
+    maven {
+        name 'm2-dv8tion'
+        url 'https://m2.dv8tion.net/releases'
+    }
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation("net.dv8tion:JDA:$jdaVersion")
+    implementation('ch.qos.logback:logback-classic:1.3.1')
+    implementation('com.squareup.okhttp3:okhttp:4.10.0')
+    implementation('com.github.Arcoda:RconCore:-SNAPSHOT')
+}
+
+compileJava.options.encoding = 'UTF-8'
