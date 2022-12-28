@@ -16,6 +16,7 @@ public class CashBot {
     public static String mineToken;
     public static String mineHash;
     public static String rconPass;
+    private static JDA api;
     public static void main(String[] arguments) throws LoginException, InterruptedException
     {
         getLogger = LoggerFactory.getLogger("CashBot");
@@ -27,7 +28,7 @@ public class CashBot {
         mineToken = arguments[1];
         mineHash = arguments[2];
         rconPass = arguments[3];
-        JDA api = JDABuilder.createDefault(arguments[0]).build();
+        api = JDABuilder.createDefault(arguments[0]).build();
         api.awaitReady();
         for (Guild server : api.getGuildCache()) {
             server.updateCommands().addCommands(
@@ -36,9 +37,13 @@ public class CashBot {
                     new CommandData("restart", "Restart the minecraft server"),
                     new CommandData("kill", "Kill the minecraft server (POTENTIAL DATA LOSS!)"),
                     new CommandData("execute", "Execute a command")
-                            .addOption(OptionType.STRING, "command", "Command to be sent to server (WITHOUT \"/\")", true)
+                            .addOption(OptionType.STRING, "command", "Command to be sent to server (WITHOUT \"/\")", true),
+                    new CommandData("info", "Refresh the info embed").setDefaultEnabled(false)
             ).queue();
         }
         api.addEventListener(new SlashCommand());
+    }
+    public static JDA getApi() {
+        return api;
     }
 }

@@ -1,6 +1,8 @@
 package com.github.arcoda.CashBot.Listener;
 
 import com.github.arcoda.CashBot.CashBot;
+import com.github.arcoda.CashBot.Embed;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.events.interaction.SlashCommandEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.InteractionHook;
@@ -10,13 +12,13 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.Random;
 
 public class SlashCommand extends ListenerAdapter {
     private OkHttpClient client = new OkHttpClient();
     @Override
     public void onSlashCommand(@NotNull SlashCommandEvent event) {
+        //Detect if user is too stinky to use the bot
         if(new Random().nextInt(100) == 99) {
             event.reply("too stinky to execute");
             return;
@@ -30,6 +32,9 @@ public class SlashCommand extends ListenerAdapter {
                 break;
             case "execute":
                 execute(event);
+                break;
+            case "info":
+                info(event);
                 break;
             default:
                 event.reply("Unrecognized command?!");
@@ -52,15 +57,15 @@ public class SlashCommand extends ListenerAdapter {
                 hook.sendMessage("Communication error, couldn't reach Minestrator servers :(").queue();
                 CashBot.getLogger.error("Got onFailure in power() in SlashCommand");
             }
-
             @Override
-            public void onResponse(Call call, final Response response) throws IOException {
+            public void onResponse(Call call, final Response response) {
                 if (!response.isSuccessful()) {
                     hook.sendMessage("Got an error reply from Minestrator :(").queue();
                     CashBot.getLogger.error("Got http code " + response + " from Minestrator");
                 } else {
                     hook.sendMessage("Done.").queue();
                 }
+                response.close();
             }
         });
     }
@@ -78,8 +83,13 @@ public class SlashCommand extends ListenerAdapter {
         } catch (IOException e) {
             hook.sendMessage("Couldn't connect to the server, is it completely started?").queue();
         } catch (AuthenticationException e) {
-            throw new RuntimeException(e);
+            hook.sendMessage("Got an anthentication error! Ask Arcoda for more infos.").queue();
         }
+    }
+
+    private void info(SlashCommandEvent event) {
+        CashBot.getApi().getTextChannelById("903231457152098305").editMessageEmbedsById("984828207419256862", new MessageEmbed[]{Embed.getInfo()}).queue();
+        event.reply("Done.").queue();
     }
 
 }
